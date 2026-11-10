@@ -24,3 +24,10 @@ This library exists to handle the wire-format details of TFTP so a server or cli
 - DATA block numbers are 16-bit unsigned (0–65535). Anything outside that range raises `ValueError`.
 - Unknown error codes on decode fall back to `ErrorCode.NOT_DEFINED` rather than raising, so a client can still read the error message text from an interop partner that uses a non-standard code.
 - Malformed input (truncated, trailing bytes, missing fields) raises `ValueError` on decode.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
